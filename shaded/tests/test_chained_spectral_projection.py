@@ -1,4 +1,4 @@
-from plunk.ca.chained_spectral_projector import GeneralProjectionLearner
+from shaded.chained_spectral_projector import GeneralProjectionLearner
 from sklearn.datasets import load_iris
 from sklearn.metrics.pairwise import euclidean_distances
 import numpy as np

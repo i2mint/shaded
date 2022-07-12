@@ -1,12 +1,18 @@
+"""
+Pairwise LDA
+"""
 from sklearn.base import BaseEstimator, TransformerMixin
 import numpy as np
 from itertools import combinations
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 
+from shaded.linalg_utils import residue
+
 
 class PairwiseLda(BaseEstimator, TransformerMixin):
     """
-    A class finding the hyperplane spanning the lines found by LDA when trying to separate the pair of classes
+    A class finding the hyperplane spanning the lines found by LDA when trying to
+    separate the pair of classes
     """
 
     def __init__(self, n_components=None):

@@ -1,3 +1,6 @@
+"""
+Linear algebra utils
+"""
 import numpy as np
 
 
@@ -75,9 +78,6 @@ def residue(span_vectors, vectors):
     return vectors - projection(span_vectors, vectors)
 
 
-
-
-
 def orth(A):
     """
     Orthonormalize the matrix A, i.e, replace it with another matrix spanning the same subspace but:
@@ -102,6 +102,7 @@ def orth(A):
     num = np.sum(s > tol, dtype=int)
     Q = u[:, :num]
     return Q.T
+
 
 # def relative_orth(A, B):
 #     """

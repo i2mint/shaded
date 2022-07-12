@@ -1,12 +1,19 @@
+"""Band projection matrix"""
+
 import warnings
+import numpy as np
 
 DFLT_N_FREQ = 1025
 DFLT_FREQ_RANGE = (0, DFLT_N_FREQ)
 
 
-def make_buckets(n_buckets=15, freqs_weighting=lambda x: x,
-                 freq_range=DFLT_FREQ_RANGE, non_empty_bucket=True,
-                 reverse=False):
+def make_buckets(
+    n_buckets=15,
+    freqs_weighting=lambda x: x,
+    freq_range=DFLT_FREQ_RANGE,
+    non_empty_bucket=True,
+    reverse=False,
+):
     """
     Create greedily buckets starting by aggregating lower frequencies, when the sum of
     the frequencies values so far exceed the number of buckets created times the target
@@ -40,8 +47,10 @@ def make_buckets(n_buckets=15, freqs_weighting=lambda x: x,
     high_freq = freq_range[1]
     n_freqs = high_freq - low_freq
     if n_freqs < n_buckets and non_empty_bucket:
-        warnings.warn('You asked for more buckets than the number of frequencies available, '
-                      'some will necessarily be empty')
+        warnings.warn(
+            'You asked for more buckets than the number of frequencies available, '
+            'some will necessarily be empty'
+        )
         non_empty_bucket = False
 
     # indices of the frequencies
@@ -77,7 +86,9 @@ def make_buckets(n_buckets=15, freqs_weighting=lambda x: x,
             else:
                 idx_bucket_list.append(bucket_idx)
                 if low_freq > 0:
-                    idx_bucket_list = [[i + low_freq for i in l] for l in idx_bucket_list]
+                    idx_bucket_list = [
+                        [i + low_freq for i in l] for l in idx_bucket_list
+                    ]
                 return idx_bucket_list
 
         # if we skipped the loop above, our newly constructed bucket is empty
@@ -95,12 +106,18 @@ def make_buckets(n_buckets=15, freqs_weighting=lambda x: x,
 
         else:
             # we now have a non empty bucket, so we check what is best, including the last added term or no
-            total_dif_small = abs(existing_bucket_sum - freq_values[position] - target_bucket_sum * (idx + 1))
+            total_dif_small = abs(
+                existing_bucket_sum
+                - freq_values[position]
+                - target_bucket_sum * (idx + 1)
+            )
             total_diff_large = abs(existing_bucket_sum - target_bucket_sum * (idx + 1))
 
             # we don't remove the last if it is better not too or if we want non empty buckets
             # and remove it would violate that rule
-            if total_diff_large < total_dif_small or (len(bucket_idx) < 2 and non_empty_bucket):
+            if total_diff_large < total_dif_small or (
+                len(bucket_idx) < 2 and non_empty_bucket
+            ):
                 idx_bucket_list.append(bucket_idx)
             # otherwise remove last term
             else:
@@ -113,7 +130,7 @@ def make_buckets(n_buckets=15, freqs_weighting=lambda x: x,
                 else:
                     pass
 
-    idx_bucket_list[-1] = freq_range[idx_bucket_list[-1][0]:]
+    idx_bucket_list[-1] = freq_range[idx_bucket_list[-1][0] :]
     if low_freq > 0:
         idx_bucket_list = [[i + low_freq for i in l] for l in idx_bucket_list]
 
@@ -183,8 +200,11 @@ def buckets_conversion(buckets, conversion_function=hertz_to_mel):
     for bucket in buckets:
         separators.append(max(bucket))
     new_separators = [int(round(conversion_function(sep))) for sep in separators]
-    new_buckets = [range(new_separators[i] + 1, new_separators[i + 1] + 1) for i in range(len(new_separators) - 1) if
-                   range(new_separators[i], new_separators[i + 1]) != []]
+    new_buckets = [
+        range(new_separators[i] + 1, new_separators[i + 1] + 1)
+        for i in range(len(new_separators) - 1)
+        if range(new_separators[i], new_separators[i + 1]) != []
+    ]
     return new_buckets
 
 
@@ -196,6 +216,7 @@ def visualize_buckets(buckets, cmap='Spectral'):
     """
 
     import matplotlib.pyplot as plt
+
     colors = []
     all_indices = [item for sublist in buckets for item in sublist]
     buckets.reverse()
@@ -228,7 +249,9 @@ def make_band_matrix_row(list_entries, row_len):
     """
 
     n_non_zero = len(list_entries)
-    row = np.array([0 if i not in list_entries else 1 / n_non_zero for i in range(row_len)])
+    row = np.array(
+        [0 if i not in list_entries else 1 / n_non_zero for i in range(row_len)]
+    )
     return row
 
 
@@ -269,11 +292,13 @@ def make_band_matrix(buckets, n_freq=DFLT_N_FREQ):
     return bucket_matrix
 
 
-def make_band_proj_matrix(n_buckets=15,
-                          n_freq=DFLT_N_FREQ,
-                          freqs_weighting=lambda x: x,
-                          non_empty_bucket=True,
-                          reverse=False):
+def make_band_proj_matrix(
+    n_buckets=15,
+    n_freq=DFLT_N_FREQ,
+    freqs_weighting=lambda x: x,
+    non_empty_bucket=True,
+    reverse=False,
+):
     """
     Uses make_buckets and make_band_matrix to make a band-based projection matrix
 
@@ -295,6 +320,7 @@ def make_band_proj_matrix(n_buckets=15,
             0.        , 0.        , 0.33333333, 0.33333333, 0.33333333]])
 
     """
-    buckets = make_buckets(n_buckets, freqs_weighting, (0, n_freq), non_empty_bucket, reverse)
+    buckets = make_buckets(
+        n_buckets, freqs_weighting, (0, n_freq), non_empty_bucket, reverse
+    )
     return make_band_matrix(buckets, n_freq)
-

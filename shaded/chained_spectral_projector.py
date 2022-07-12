@@ -1,3 +1,5 @@
+"""Chained spectral projectors"""
+
 import importlib
 import numpy as np
 import warnings
@@ -8,11 +10,11 @@ from sklearn.decomposition import PCA
 from sklearn.linear_model import LinearRegression
 from sklearn import random_projection
 
-from plunk.ca.pseudo_pca import PseudoPca
-from plunk.ca.pseudo_lda import PseudoLda
-from plunk.ca.pair_wise_lda import PairwiseLda
-from plunk.ca.linalg_utils import residue, orth
-from plunk.ca.band_projection_matrix import make_band_matrix, make_buckets, hertz_to_mel
+from shaded.pseudo_pca import PseudoPca
+from shaded.pseudo_lda import PseudoLda
+from shaded.pair_wise_lda import PairwiseLda
+from shaded.linalg_utils import residue, orth
+from shaded.band_projection_matrix import make_band_matrix, make_buckets, hertz_to_mel
 
 CLUSTERING_OPTIONS = ('KMeans', 'SpectralClustering', 'AffinityPropagation',
                       'AgglomerativeClustering', 'Birch', 'MeanShift')
