@@ -260,35 +260,3 @@ class GeneralProjectionLearner(BaseEstimator, TransformerMixin):
     def space_residue(self, X):
         return X - np.dot(X, self.projection_)
 
-
-if __name__ == '__main__':
-    # PCA's components seems to be orthonormal
-    from omodel.fv.chained_spectral_projector import GeneralProjectionLearner
-    from sklearn.datasets import load_iris
-    #
-    # data = load_iris()
-    # X = data['data']
-    # y = data['target']
-
-    # chain = ({'type': 'pca', 'args': {'n_components': 1}}, {'type': 'pca', 'args': {'n_components': 1}})
-    #
-    # gpl = GeneralProjectionLearner(chain=chain)
-    # XX = gpl.fit_transform(X=X, y=y, ortho=True)
-    # XXX = gpl.project(X)
-    # XXXX = gpl.space_residue(X)
-    #
-    # from oplot.plot_data_set import scatter_and_color_according_to_y
-    #
-    # print(gpl.scalings)
-    # scatter_and_color_according_to_y(XX, y)
-    # scatter_and_color_according_to_y(XXX, y)
-    # scatter_and_color_according_to_y(XXXX, y)
-
-    chain = ({'type': 'log_spaced', 'args': {'n_components': 8, 'chunk_size': 64}},)
-    X = np.random.random((100, 33))
-    X = None
-    gpl = GeneralProjectionLearner(chain=chain)
-    gpl.fit(X=X, ortho=False)
-
-    print(gpl.scalings)
-
