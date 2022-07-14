@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>shaded.chained_spectral_projector &mdash; shaded 0.1.0 documentation</title><link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script src="../../_static/toggleprompt.js"></script>
+        <script src="../../_static/clipboard.min.js"></script>
+        <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> shaded
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/shaded.html">shaded</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/shaded/band_projection_matrix.html">shaded.band_projection_matrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/shaded/chained_spectral_projector.html">shaded.chained_spectral_projector</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/shaded/linalg_utils.html">shaded.linalg_utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/shaded/pair_wise_lda.html">shaded.pair_wise_lda</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/shaded/pseudo_lda.html">shaded.pseudo_lda</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/shaded/pseudo_pca.html">shaded.pseudo_pca</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/shaded/tests/test_chained_spectral_projection.html">shaded.tests.test_chained_spectral_projection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/shaded/tests/test_linalg_utils.html">shaded.tests.test_linalg_utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../module_docs/shaded/util.html">shaded.util</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">shaded</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      <li>shaded.chained_spectral_projector</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for shaded.chained_spectral_projector</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Chained spectral projectors&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">importlib</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+
+<span class="kn">from</span> <span class="nn">sklearn.neighbors</span> <span class="kn">import</span> <span class="n">NeighborhoodComponentsAnalysis</span> <span class="k">as</span> <span class="n">NCA</span>
+<span class="kn">from</span> <span class="nn">sklearn.discriminant_analysis</span> <span class="kn">import</span> <span class="n">LinearDiscriminantAnalysis</span> <span class="k">as</span> <span class="n">LDA</span>
+<span class="kn">from</span> <span class="nn">sklearn.decomposition</span> <span class="kn">import</span> <span class="n">PCA</span>
+<span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="kn">import</span> <span class="n">LinearRegression</span>
+<span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">random_projection</span>
+
+<span class="kn">from</span> <span class="nn">shaded.pseudo_pca</span> <span class="kn">import</span> <span class="n">PseudoPca</span>
+<span class="kn">from</span> <span class="nn">shaded.pseudo_lda</span> <span class="kn">import</span> <span class="n">PseudoLda</span>
+<span class="kn">from</span> <span class="nn">shaded.pair_wise_lda</span> <span class="kn">import</span> <span class="n">PairwiseLda</span>
+<span class="kn">from</span> <span class="nn">shaded.linalg_utils</span> <span class="kn">import</span> <span class="n">residue</span><span class="p">,</span> <span class="n">orth</span>
+<span class="kn">from</span> <span class="nn">shaded.band_projection_matrix</span> <span class="kn">import</span> <span class="n">make_band_matrix</span><span class="p">,</span> <span class="n">make_buckets</span><span class="p">,</span> <span class="n">hertz_to_mel</span>
+
+<span class="n">CLUSTERING_OPTIONS</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="s1">&#39;KMeans&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;SpectralClustering&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;AffinityPropagation&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;AgglomerativeClustering&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Birch&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;MeanShift&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<div class="viewcode-block" id="learn_spect_proj"><a class="viewcode-back" href="../../module_docs/shaded/chained_spectral_projector.html#shaded.chained_spectral_projector.learn_spect_proj">[docs]</a><span class="k">def</span> <span class="nf">learn_spect_proj</span><span class="p">(</span>
+    <span class="n">X</span><span class="p">,</span>
+    <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">spectral_proj_name</span><span class="o">=</span><span class="s1">&#39;pca&#39;</span><span class="p">,</span>
+    <span class="n">clustering_meth</span><span class="o">=</span><span class="s1">&#39;KMeans&#39;</span><span class="p">,</span>
+    <span class="n">clustering_options</span><span class="o">=</span><span class="n">CLUSTERING_OPTIONS</span><span class="p">,</span>
+    <span class="n">kwargs_feat</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">kwargs_clust</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function to learn each of the important spectral projection</span>
+
+<span class="sd">    :param X: the fvs, an array of size n*k</span>
+<span class="sd">    :param y: the classes, an array of size n</span>
+<span class="sd">    :param spectral_proj_name: a string of the name of the featurizer</span>
+<span class="sd">    :param args: extra argument to be passed to the featurizer class</span>
+<span class="sd">    :return: a matrix in the form of a numpy array</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">clustering_options</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">clustering_options</span><span class="p">)</span>
+    <span class="n">kwargs_feat</span> <span class="o">=</span> <span class="n">kwargs_feat</span> <span class="ow">or</span> <span class="p">{</span><span class="s1">&#39;n_components&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">}</span>
+    <span class="n">kwargs_clust</span> <span class="o">=</span> <span class="n">kwargs_clust</span> <span class="ow">or</span> <span class="p">{}</span>
+
+    <span class="k">assert</span> <span class="p">(</span>
+        <span class="n">clustering_meth</span> <span class="ow">in</span> <span class="n">clustering_options</span>
+    <span class="p">),</span> <span class="s1">&#39;clustering options must one of </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">clustering_options</span><span class="p">))</span>
+    <span class="p">)</span>
+    <span class="n">clusterer_m</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="s1">&#39;sklearn.cluster&#39;</span><span class="p">),</span> <span class="n">clustering_meth</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">spectral_proj_name</span> <span class="o">==</span> <span class="s1">&#39;random_gaussian&#39;</span><span class="p">:</span>
+        <span class="n">rand_proj</span> <span class="o">=</span> <span class="n">random_projection</span><span class="o">.</span><span class="n">GaussianRandomProjection</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs_feat</span><span class="p">)</span>
+        <span class="n">rand_proj</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="n">proj_matrix</span> <span class="o">=</span> <span class="n">rand_proj</span><span class="o">.</span><span class="n">components_</span><span class="o">.</span><span class="n">T</span>
+
+    <span class="k">elif</span> <span class="n">spectral_proj_name</span> <span class="o">==</span> <span class="s1">&#39;keep_features&#39;</span><span class="p">:</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="n">kwargs_feat</span><span class="p">[</span><span class="s1">&#39;indices&#39;</span><span class="p">]</span>
+        <span class="n">proj_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">)))</span>
+        <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">)):</span>
+            <span class="n">proj_matrix</span><span class="p">[</span><span class="n">indices</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="k">elif</span> <span class="n">spectral_proj_name</span> <span class="o">==</span> <span class="s1">&#39;pca&#39;</span><span class="p">:</span>
+        <span class="n">pca</span> <span class="o">=</span> <span class="n">PCA</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs_feat</span><span class="p">)</span>
+        <span class="n">pca</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="n">proj_matrix</span> <span class="o">=</span> <span class="n">pca</span><span class="o">.</span><span class="n">components_</span><span class="o">.</span><span class="n">T</span>
+
+    <span class="k">elif</span> <span class="n">spectral_proj_name</span> <span class="o">==</span> <span class="s1">&#39;pseudo_pca&#39;</span><span class="p">:</span>
+        <span class="c1"># make the pseudo pca proj matrix</span>
+        <span class="n">ppca</span> <span class="o">=</span> <span class="n">PseudoPca</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs_feat</span><span class="p">)</span>
+        <span class="n">ppca</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="n">proj_matrix</span> <span class="o">=</span> <span class="n">ppca</span><span class="o">.</span><span class="n">proj_mat</span><span class="o">.</span><span class="n">T</span>
+
+    <span class="k">elif</span> <span class="n">spectral_proj_name</span> <span class="o">==</span> <span class="s1">&#39;lda&#39;</span><span class="p">:</span>
+        <span class="n">lda</span> <span class="o">=</span> <span class="n">LDA</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs_feat</span><span class="p">)</span>
+        <span class="n">lda</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="n">n_components</span> <span class="o">=</span> <span class="n">kwargs_feat</span><span class="p">[</span><span class="s1">&#39;n_components&#39;</span><span class="p">]</span>
+        <span class="n">proj_matrix</span> <span class="o">=</span> <span class="n">lda</span><span class="o">.</span><span class="n">scalings_</span><span class="p">[:,</span> <span class="p">:</span><span class="n">n_components</span><span class="p">]</span>
+
+    <span class="k">elif</span> <span class="n">spectral_proj_name</span> <span class="o">==</span> <span class="s1">&#39;pseudo_lda&#39;</span><span class="p">:</span>
+        <span class="n">plda</span> <span class="o">=</span> <span class="n">PseudoLda</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs_feat</span><span class="p">)</span>
+        <span class="n">plda</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="n">proj_matrix</span> <span class="o">=</span> <span class="n">plda</span><span class="o">.</span><span class="n">proj_mat</span>
+
+    <span class="k">elif</span> <span class="n">spectral_proj_name</span> <span class="o">==</span> <span class="s1">&#39;pairwise_lda&#39;</span><span class="p">:</span>
+        <span class="n">plda</span> <span class="o">=</span> <span class="n">PairwiseLda</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs_feat</span><span class="p">)</span>
+        <span class="n">classes</span> <span class="o">=</span> <span class="n">kwargs_feat</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;classes&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">normal</span> <span class="o">=</span> <span class="n">kwargs_feat</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;normal&#39;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">plda</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="n">classes</span><span class="p">,</span> <span class="n">normal</span><span class="o">=</span><span class="n">normal</span><span class="p">)</span>
+        <span class="n">proj_matrix</span> <span class="o">=</span> <span class="n">plda</span><span class="o">.</span><span class="n">proj_mat</span>
+
+    <span class="k">elif</span> <span class="n">spectral_proj_name</span> <span class="o">==</span> <span class="s1">&#39;unsupervised_lda&#39;</span><span class="p">:</span>
+        <span class="n">n_components</span> <span class="o">=</span> <span class="n">kwargs_feat</span><span class="p">[</span><span class="s1">&#39;n_components&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">y</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">warning</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s1">&#39;Warning: y will be replaced by classes found by the chosen clusterer&#39;</span>
+            <span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">warning</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s1">&#39;n_clusters&#39;</span> <span class="ow">in</span> <span class="n">clusterer_m</span><span class="o">.</span><span class="fm">__init__</span><span class="o">.</span><span class="vm">__code__</span><span class="o">.</span><span class="n">co_varnames</span><span class="p">:</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">clusterer_m</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="n">n_components</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs_clust</span><span class="p">)</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">clusterer_m</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs_clust</span><span class="p">)</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="n">lda</span> <span class="o">=</span> <span class="n">LDA</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs_feat</span><span class="p">)</span>
+        <span class="n">lda</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="n">proj_matrix</span> <span class="o">=</span> <span class="n">lda</span><span class="o">.</span><span class="n">scalings_</span><span class="p">[:,</span> <span class="p">:</span><span class="n">n_components</span><span class="p">]</span>
+
+    <span class="k">elif</span> <span class="n">spectral_proj_name</span> <span class="o">==</span> <span class="s1">&#39;unsupervised_pseudo_lda&#39;</span><span class="p">:</span>
+        <span class="n">n_components</span> <span class="o">=</span> <span class="n">kwargs_feat</span><span class="p">[</span><span class="s1">&#39;n_components&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">y</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">warning</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="s1">&#39;Warning: y will be replaced by classes found by the chosen clusterer&#39;</span>
+            <span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="n">warning</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s1">&#39;n_clusters&#39;</span> <span class="ow">in</span> <span class="n">clusterer_m</span><span class="o">.</span><span class="fm">__init__</span><span class="o">.</span><span class="vm">__code__</span><span class="o">.</span><span class="n">co_varnames</span><span class="p">:</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">clusterer_m</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="n">n_components</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs_clust</span><span class="p">)</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">clusterer_m</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs_clust</span><span class="p">)</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="n">pseudo_lda</span> <span class="o">=</span> <span class="n">PseudoLda</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs_feat</span><span class="p">)</span>
+        <span class="n">pseudo_lda</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="n">proj_matrix</span> <span class="o">=</span> <span class="n">pseudo_lda</span><span class="o">.</span><span class="n">proj_mat</span><span class="p">[:,</span> <span class="p">:</span><span class="n">n_components</span><span class="p">]</span>
+
+    <span class="k">elif</span> <span class="n">spectral_proj_name</span> <span class="o">==</span> <span class="s1">&#39;nca&#39;</span><span class="p">:</span>
+        <span class="n">nca</span> <span class="o">=</span> <span class="n">NCA</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs_feat</span><span class="p">)</span>
+        <span class="n">nca</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="n">proj_matrix</span> <span class="o">=</span> <span class="n">nca</span><span class="o">.</span><span class="n">components_</span><span class="o">.</span><span class="n">T</span>
+
+    <span class="k">elif</span> <span class="n">spectral_proj_name</span> <span class="o">==</span> <span class="s1">&#39;unsupervised_nca&#39;</span><span class="p">:</span>
+        <span class="n">n_components</span> <span class="o">=</span> <span class="n">kwargs_feat</span><span class="p">[</span><span class="s1">&#39;n_components&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">y</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;y will be replaced by classes found by the chosen clusterer&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s1">&#39;n_clusters&#39;</span> <span class="ow">in</span> <span class="n">clusterer_m</span><span class="o">.</span><span class="fm">__init__</span><span class="o">.</span><span class="vm">__code__</span><span class="o">.</span><span class="n">co_varnames</span><span class="p">:</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">clusterer_m</span><span class="p">(</span><span class="n">n_clusters</span><span class="o">=</span><span class="n">n_components</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs_clust</span><span class="p">)</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">y</span> <span class="o">=</span> <span class="n">clusterer_m</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs_clust</span><span class="p">)</span><span class="o">.</span><span class="n">fit_predict</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="n">nca</span> <span class="o">=</span> <span class="n">NCA</span><span class="p">(</span><span class="o">**</span><span class="n">kwargs_feat</span><span class="p">)</span>
+        <span class="n">nca</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="n">proj_matrix</span> <span class="o">=</span> <span class="n">nca</span><span class="o">.</span><span class="n">components_</span><span class="o">.</span><span class="n">T</span>
+
+    <span class="k">elif</span> <span class="n">spectral_proj_name</span> <span class="o">==</span> <span class="s1">&#39;linear_regression&#39;</span><span class="p">:</span>
+        <span class="n">lr</span> <span class="o">=</span> <span class="n">LinearRegression</span><span class="p">()</span>
+        <span class="n">lr</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+        <span class="n">proj_matrix</span> <span class="o">=</span> <span class="n">lr</span><span class="o">.</span><span class="n">coef_</span><span class="o">.</span><span class="n">T</span>
+
+    <span class="k">elif</span> <span class="n">spectral_proj_name</span> <span class="o">==</span> <span class="s1">&#39;default&#39;</span><span class="p">:</span>
+        <span class="n">n_components</span> <span class="o">=</span> <span class="n">kwargs_feat</span><span class="p">[</span><span class="s1">&#39;n_components&#39;</span><span class="p">]</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+        <span class="n">n_freq</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">freqs_weighting</span> <span class="o">=</span> <span class="n">kwargs_feat</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;freqs_weighting&#39;</span><span class="p">,</span> <span class="n">hertz_to_mel</span><span class="p">)</span>
+        <span class="n">buckets</span> <span class="o">=</span> <span class="n">make_buckets</span><span class="p">(</span>
+            <span class="n">n_buckets</span><span class="o">=</span><span class="n">n_components</span><span class="p">,</span>
+            <span class="n">reverse</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">freqs_weighting</span><span class="o">=</span><span class="n">freqs_weighting</span><span class="p">,</span>
+            <span class="n">freq_range</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_freq</span><span class="p">),</span>
+        <span class="p">)</span>
+        <span class="n">default_matrix</span> <span class="o">=</span> <span class="n">make_band_matrix</span><span class="p">(</span><span class="n">buckets</span><span class="p">,</span> <span class="n">n_freq</span><span class="o">=</span><span class="n">n_freq</span><span class="p">)</span>
+        <span class="n">proj_matrix</span> <span class="o">=</span> <span class="n">default_matrix</span><span class="o">.</span><span class="n">T</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">all_spectral_proj</span> <span class="o">=</span> <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="s1">&#39;keep_features&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;pca&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;lda&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;pseudo_pca&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;unsupervised_lda&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;unsupervised_nca&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;nca&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;linear_regression&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;unsupervised_pseudo_lda&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;pseudo_lda&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;pairwise_lda&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;random_gaussian&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;default&#39;</span><span class="p">,</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;the spectral projector must be one of: </span><span class="si">{</span><span class="n">all_spectral_proj</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">proj_matrix</span></div>
+
+
+<div class="viewcode-block" id="keep_only_indices"><a class="viewcode-back" href="../../module_docs/shaded/chained_spectral_projector.html#shaded.chained_spectral_projector.keep_only_indices">[docs]</a><span class="k">def</span> <span class="nf">keep_only_indices</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">n_freq</span><span class="o">=</span><span class="mi">1025</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Makes a matrix which when a spectra is multiplied with it, only the entires in the list indices are kept</span>
+<span class="sd">    :param indices: a list of indices to keep</span>
+<span class="sd">    :param n_freq: the total number of frequencies in the spectra</span>
+<span class="sd">    :return: a matrix of size (n_freq, len(indices))</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">proj_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n_freq</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">)))</span>
+    <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">indices</span><span class="p">)):</span>
+        <span class="n">proj_matrix</span><span class="p">[</span><span class="n">indices</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">return</span> <span class="n">proj_matrix</span></div>
+
+
+<div class="viewcode-block" id="learn_chain_proj_matrix"><a class="viewcode-back" href="../../module_docs/shaded/chained_spectral_projector.html#shaded.chained_spectral_projector.learn_chain_proj_matrix">[docs]</a><span class="k">def</span> <span class="nf">learn_chain_proj_matrix</span><span class="p">(</span>
+    <span class="n">X</span><span class="p">,</span>
+    <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">chain</span><span class="o">=</span><span class="p">({</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;pca&#39;</span><span class="p">,</span> <span class="s1">&#39;args&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;n_components&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">}},),</span>
+    <span class="n">indices</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+    <span class="n">n_freq</span><span class="o">=</span><span class="mi">1025</span><span class="p">,</span>
+<span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A function successively learning a projections matrix on the residue of the previous one. The projections</span>
+<span class="sd">    matrices are then concatenated and return as one single projection matrix. Note that the final projection</span>
+<span class="sd">    matrix may not produce fvs of the size the sum of the components of each part, i.e., care must be taken</span>
+<span class="sd">    to ensure each classes called must be able to produce the required number of components. For example,</span>
+<span class="sd">    if the number of classes is 10, then lda can only produce 9 dimensions. To obtain say 12 dimension, the user</span>
+<span class="sd">    will need to chain two lda&#39;s, for example with size 9 and 3 respectively.</span>
+
+<span class="sd">    :param X: the fvs, an array of size n*k</span>
+<span class="sd">    :param y: the classes, an array of size n</span>
+<span class="sd">    :param chain: a tuple of dictionaries each containing the type of projection along with its parameters</span>
+<span class="sd">    :param indices: the indices of the spectra to work with, anything else is discarded</span>
+<span class="sd">    :param n_freq: the total number of entries from the spectra. Only needed if n_freq is not None, in order to</span>
+<span class="sd">                   determine the size of the freq_selection_matrix</span>
+<span class="sd">    :return: a single projection matrix</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="kn">from</span> <span class="nn">oplot.plot_data_set</span> <span class="kn">import</span> <span class="n">scatter_and_color_according_to_y</span>
+
+    <span class="n">freq_selection_matrix</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="k">if</span> <span class="n">indices</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">freq_selection_matrix</span> <span class="o">=</span> <span class="n">keep_only_indices</span><span class="p">(</span><span class="n">indices</span><span class="p">,</span> <span class="n">n_freq</span><span class="o">=</span><span class="n">n_freq</span><span class="p">)</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">freq_selection_matrix</span><span class="p">)</span>
+
+    <span class="n">all_proj_matrices</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">mat_dict</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">chain</span><span class="p">):</span>
+        <span class="n">kwargs_feat</span> <span class="o">=</span> <span class="n">mat_dict</span><span class="p">[</span><span class="s1">&#39;args&#39;</span><span class="p">]</span>
+        <span class="n">proj_matrix</span> <span class="o">=</span> <span class="n">learn_spect_proj</span><span class="p">(</span>
+            <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">spectral_proj_name</span><span class="o">=</span><span class="n">mat_dict</span><span class="p">[</span><span class="s1">&#39;type&#39;</span><span class="p">],</span> <span class="n">kwargs_feat</span><span class="o">=</span><span class="n">kwargs_feat</span>
+        <span class="p">)</span>
+        <span class="n">all_proj_matrices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">proj_matrix</span><span class="p">)</span>
+        <span class="c1"># if idx &lt; len(chain) - 1:</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">residue</span><span class="p">(</span><span class="n">proj_matrix</span><span class="p">,</span> <span class="n">X</span><span class="p">)</span>
+        <span class="c1"># # scatter_and_color_according_to_y(X, y)</span>
+        <span class="c1"># print(X[:3])</span>
+
+    <span class="n">proj_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">all_proj_matrices</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">indices</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">proj_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">freq_selection_matrix</span><span class="p">,</span> <span class="n">proj_matrix</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">proj_matrix</span><span class="p">)</span></div>
+
+
+<span class="kn">from</span> <span class="nn">sklearn.base</span> <span class="kn">import</span> <span class="n">TransformerMixin</span><span class="p">,</span> <span class="n">BaseEstimator</span>
+
+
+<div class="viewcode-block" id="GeneralProjectionLearner"><a class="viewcode-back" href="../../module_docs/shaded/chained_spectral_projector.html#shaded.chained_spectral_projector.GeneralProjectionLearner">[docs]</a><span class="k">class</span> <span class="nc">GeneralProjectionLearner</span><span class="p">(</span><span class="n">BaseEstimator</span><span class="p">,</span> <span class="n">TransformerMixin</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">chain</span><span class="o">=</span><span class="p">({</span><span class="s1">&#39;type&#39;</span><span class="p">:</span> <span class="s1">&#39;pca&#39;</span><span class="p">,</span> <span class="s1">&#39;args&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;n_components&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">}},),</span>
+        <span class="n">indices</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">n_freq</span><span class="o">=</span><span class="mi">1025</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chain</span> <span class="o">=</span> <span class="n">chain</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">indices</span> <span class="o">=</span> <span class="n">indices</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_freq</span> <span class="o">=</span> <span class="n">n_freq</span>
+
+<div class="viewcode-block" id="GeneralProjectionLearner.fit"><a class="viewcode-back" href="../../module_docs/shaded/chained_spectral_projector.html#shaded.chained_spectral_projector.GeneralProjectionLearner.fit">[docs]</a>    <span class="k">def</span> <span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">ortho</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Ortho set to True will make it so that the projection into the subspace will be &quot;direction agnostic&quot;, which</span>
+<span class="sd">        makes sense in terms of pure dimension reduction. But for some model, like lda, the length of the vectors onto</span>
+<span class="sd">        which we will project represent the relative importance of those directions. In that case it may make sense to</span>
+<span class="sd">        set ortho to False</span>
+
+<span class="sd">        :param X: array of vectors</span>
+<span class="sd">        :param y: array of tags</span>
+<span class="sd">        :param ortho: boolean, whether or not to orthonormalize the vector onto which to project</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">scalings</span> <span class="o">=</span> <span class="n">learn_chain_proj_matrix</span><span class="p">(</span>
+            <span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">chain</span><span class="p">,</span> <span class="n">indices</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">,</span> <span class="n">n_freq</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_freq</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">ortho</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">scalings</span> <span class="o">=</span> <span class="n">orth</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scalings</span><span class="o">.</span><span class="n">T</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">projection_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scalings</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scalings</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">projection_</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">scalings</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scalings</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span></div>
+
+    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+        <span class="c1"># lower the dimension of the vectors by projecting in the subspace</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">scalings</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">project</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+        <span class="c1"># projects in the SAME space, the dimension is unchanged</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">projection_</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">space_residue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">X</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">projection_</span><span class="p">)</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright NO COPYRIGHT.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

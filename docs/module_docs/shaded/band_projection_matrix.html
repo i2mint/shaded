@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>shaded.band_projection_matrix &mdash; shaded 0.1.0 documentation</title><link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/copybutton.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  <script id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/language_data.js"></script>
+        <script src="../../_static/toggleprompt.js"></script>
+        <script src="../../_static/clipboard.min.js"></script>
+        <script src="../../_static/copybutton.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="shaded.chained_spectral_projector" href="chained_spectral_projector.html" />
+    <link rel="prev" title="shaded" href="../shaded.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../index.html" class="icon icon-home"> shaded
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../shaded.html">shaded</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">shaded.band_projection_matrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chained_spectral_projector.html">shaded.chained_spectral_projector</a></li>
+<li class="toctree-l1"><a class="reference internal" href="linalg_utils.html">shaded.linalg_utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pair_wise_lda.html">shaded.pair_wise_lda</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pseudo_lda.html">shaded.pseudo_lda</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pseudo_pca.html">shaded.pseudo_pca</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tests/test_chained_spectral_projection.html">shaded.tests.test_chained_spectral_projection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tests/test_linalg_utils.html">shaded.tests.test_linalg_utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="util.html">shaded.util</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">shaded</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>shaded.band_projection_matrix</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/module_docs/shaded/band_projection_matrix.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-shaded.band_projection_matrix">
+<span id="shaded-band-projection-matrix"></span><h1>shaded.band_projection_matrix<a class="headerlink" href="#module-shaded.band_projection_matrix" title="Permalink to this headline">¶</a></h1>
+<p>Band projection matrix</p>
+<dl class="py function">
+<dt id="shaded.band_projection_matrix.buckets_conversion">
+<code class="sig-prename descclassname">shaded.band_projection_matrix.</code><code class="sig-name descname">buckets_conversion</code><span class="sig-paren">(</span><em class="sig-param">buckets</em>, <em class="sig-param">conversion_function=&lt;function hertz_to_mel&gt;</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/shaded/band_projection_matrix.html#buckets_conversion"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shaded.band_projection_matrix.buckets_conversion" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert buckets in one scale to another through the conversion_function.
+For example, if the conversion_function is set to hertz_to_mel, the function fed with hertz buckets
+will return the equivalent mel buckets.
+:param buckets: list of list of frequencies in one scale
+:param conversion_function: a mapping from frequencies in one scale to another
+:return: the converted buckets</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="shaded.band_projection_matrix.hertz_to_mel">
+<code class="sig-prename descclassname">shaded.band_projection_matrix.</code><code class="sig-name descname">hertz_to_mel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">hertz</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/shaded/band_projection_matrix.html#hertz_to_mel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shaded.band_projection_matrix.hertz_to_mel" title="Permalink to this definition">¶</a></dt>
+<dd><p>convert a frequency given in hertz into mel</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="shaded.band_projection_matrix.make_band_matrix">
+<code class="sig-prename descclassname">shaded.band_projection_matrix.</code><code class="sig-name descname">make_band_matrix</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">buckets</span></em>, <em class="sig-param"><span class="n">n_freq</span><span class="o">=</span><span class="default_value">1025</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/shaded/band_projection_matrix.html#make_band_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shaded.band_projection_matrix.make_band_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a list of n list of indices, make a matrix of size n by n_freq where the entries of row k are 0
+everywhere except at the index in the k list of buckets, where the entries are the inverse of the length
+of that bucket</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>buckets</strong> – a list of list containing the indices of non zero entries of the corresponding row</p></li>
+<li><p><strong>n_freq</strong> – the number of column of the matrix</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a len(buckets) by n_freq matrix</p>
+</dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">buckets</span> <span class="o">=</span> <span class="n">make_buckets</span><span class="p">(</span><span class="n">n_buckets</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">freqs_weighting</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="mf">0.001</span><span class="p">),</span> <span class="n">freq_range</span><span class="o">=</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">1000</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">M</span> <span class="o">=</span> <span class="n">make_band_matrix</span><span class="p">(</span><span class="n">buckets</span><span class="p">,</span> <span class="n">n_freq</span><span class="o">=</span><span class="mi">1025</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">M</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="go">(15, 1025)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># the matrix sends each of the 200 first unitary vector to the zero vector (not below is not a mathematical proof of that, but solid clue)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vec</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mi">200</span> <span class="o">+</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1025</span> <span class="o">-</span> <span class="mi">200</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">vec</span><span class="p">))</span>
+<span class="go">[0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0.]</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># after that, we get non zero output (in general at least)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vec</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="mi">200</span> <span class="o">+</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1025</span> <span class="o">-</span> <span class="mi">201</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">vec</span><span class="p">))</span>
+<span class="go">[0.01612903 0.         0.         0.         0.         0.</span>
+<span class="go"> 0.         0.         0.         0.         0.         0.</span>
+<span class="go"> 0.         0.         0.        ]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="shaded.band_projection_matrix.make_band_matrix_row">
+<code class="sig-prename descclassname">shaded.band_projection_matrix.</code><code class="sig-name descname">make_band_matrix_row</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">list_entries</span></em>, <em class="sig-param"><span class="n">row_len</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/shaded/band_projection_matrix.html#make_band_matrix_row"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shaded.band_projection_matrix.make_band_matrix_row" title="Permalink to this definition">¶</a></dt>
+<dd><p>Makes a row for the spectral bucket matrix. The row is zero everywhere except on the entries of index in
+list_entries where it is 1 / len(list_entries)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>list_entries</strong> – the indices of non zero entries of the row</p></li>
+<li><p><strong>row_len</strong> – the length of the row</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>an array of length row_len as described above</p>
+</dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">make_band_matrix_row</span><span class="p">([</span><span class="mi">3</span><span class="p">],</span> <span class="mi">5</span><span class="p">)</span>
+<span class="go">array([0., 0., 0., 1., 0.])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">make_band_matrix_row</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="mi">5</span><span class="p">)</span>
+<span class="go">array([0.5, 0. , 0. , 0.5, 0. ])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="shaded.band_projection_matrix.make_band_proj_matrix">
+<code class="sig-prename descclassname">shaded.band_projection_matrix.</code><code class="sig-name descname">make_band_proj_matrix</code><span class="sig-paren">(</span><em class="sig-param">n_buckets=15</em>, <em class="sig-param">n_freq=1025</em>, <em class="sig-param">freqs_weighting=&lt;function &lt;lambda&gt;&gt;</em>, <em class="sig-param">non_empty_bucket=True</em>, <em class="sig-param">reverse=False</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/shaded/band_projection_matrix.html#make_band_proj_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shaded.band_projection_matrix.make_band_proj_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uses make_buckets and make_band_matrix to make a band-based projection matrix</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_buckets</strong> – final number of buckets</p></li>
+<li><p><strong>freqs_weighting</strong> – any function assigning a non-negative value to each
+element in the freq_range
+If given a list, the function will be assumed
+to be the one to one mapping the frequencies to the value in the list</p></li>
+<li><p><strong>n_freq</strong> – the number of column of the matrix</p></li>
+<li><p><strong>non_empty_bucket</strong> – if set to true, all buckets will have at least one element</p></li>
+<li><p><strong>reverse</strong> – if set to true, will start aggregating higher frequencies instead</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a len(buckets) by n_freq matrix</p>
+</dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">make_band_proj_matrix</span><span class="p">(</span><span class="n">n_buckets</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">n_freq</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="go">array([[0.14285714, 0.14285714, 0.14285714, 0.14285714, 0.14285714,</span>
+<span class="go">        0.14285714, 0.14285714, 0.        , 0.        , 0.        ],</span>
+<span class="go">       [0.        , 0.        , 0.        , 0.        , 0.        ,</span>
+<span class="go">        0.        , 0.        , 0.33333333, 0.33333333, 0.33333333]])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="shaded.band_projection_matrix.make_buckets">
+<code class="sig-prename descclassname">shaded.band_projection_matrix.</code><code class="sig-name descname">make_buckets</code><span class="sig-paren">(</span><em class="sig-param">n_buckets=15</em>, <em class="sig-param">freqs_weighting=&lt;function &lt;lambda&gt;&gt;</em>, <em class="sig-param">freq_range=(0</em>, <em class="sig-param">1025)</em>, <em class="sig-param">non_empty_bucket=True</em>, <em class="sig-param">reverse=False</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/shaded/band_projection_matrix.html#make_buckets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shaded.band_projection_matrix.make_buckets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create greedily buckets starting by aggregating lower frequencies, when the sum of
+the frequencies values so far exceed the number of buckets created times the target
+average value for a single bucket, a new bucket is created with or without the last
+term according to which choice will be closest to the target</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_buckets</strong> – final number of buckets</p></li>
+<li><p><strong>freqs_weighting</strong> – any function assigning a non-negative value to each
+element in the freq_range
+If given a list, the function will be assumed
+to be the one to one mapping the frequencies to the value in the list</p></li>
+<li><p><strong>freq_range</strong> – the range of frequencies considered, inclusive on both ends</p></li>
+<li><p><strong>non_empty_bucket</strong> – if set to true, all buckets will have at least one element</p></li>
+<li><p><strong>reverse</strong> – if set to true, will start aggregating higher frequencies instead, which for an increasing weight</p></li>
+</ul>
+</dd>
+</dl>
+<p>function will aggregate the higher frequencies into larger bins as typical
+:return: a partition of freq_range</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">buckets</span> <span class="o">=</span> <span class="n">make_buckets</span><span class="p">(</span><span class="n">n_buckets</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">freqs_weighting</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="mf">0.001</span><span class="p">),</span> <span class="n">freq_range</span><span class="o">=</span><span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">1000</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">buckets</span><span class="p">)</span> <span class="o">==</span> <span class="mi">15</span>
+<span class="go">True</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">buckets</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># the first bucket starts at the first term of freq_range</span>
+<span class="go">200</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">buckets</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="c1"># the last bucket ends at the last term of freq_range - 1</span>
+<span class="go">999</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="shaded.band_projection_matrix.make_buckets_simple">
+<code class="sig-prename descclassname">shaded.band_projection_matrix.</code><code class="sig-name descname">make_buckets_simple</code><span class="sig-paren">(</span><em class="sig-param">n_bucket=10</em>, <em class="sig-param">row_weights_func=&lt;function &lt;lambda&gt;&gt;</em>, <em class="sig-param">n_freq=20</em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/shaded/band_projection_matrix.html#make_buckets_simple"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shaded.band_projection_matrix.make_buckets_simple" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>n_bucket</strong> – int, the number of buckets to create</p></li>
+<li><p><strong>row_weights_func</strong> – a function, non zero on the integers values from 0 to n_freq. The relative values from
+one integer a to a + 1 will become the relative number of non zero values from row a to
+row a + 1. Note that everything has to be rounded so the actual relationship is a bit more
+complex. The rounding follows two rules:
+1) at least 1 in row
+2) the excess or lack are removed from the end, one unit per index</p></li>
+<li><p><strong>n_freq</strong> – int, the total number of frequencies, i.e, indices in buckets</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a list of list of indices, consecutive, starting at 0 and ending at n_freq</p>
+</dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">make_buckets_simple</span><span class="p">(</span><span class="n">row_weights_func</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="mi">1</span><span class="o">+</span><span class="n">x</span><span class="p">)</span>
+<span class="go">[[0], [1], [2], [3], [4, 5], [6, 7], [8, 9, 10], [11, 12, 13], [14, 15, 16], [17, 18, 19, 20]]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt id="shaded.band_projection_matrix.mel_to_hertz">
+<code class="sig-prename descclassname">shaded.band_projection_matrix.</code><code class="sig-name descname">mel_to_hertz</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mel</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/shaded/band_projection_matrix.html#mel_to_hertz"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shaded.band_projection_matrix.mel_to_hertz" title="Permalink to this definition">¶</a></dt>
+<dd><p>convert a frequency given in mel into hertz</p>
+</dd></dl>
+
+<dl class="py function">
+<dt id="shaded.band_projection_matrix.visualize_buckets">
+<code class="sig-prename descclassname">shaded.band_projection_matrix.</code><code class="sig-name descname">visualize_buckets</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">buckets</span></em>, <em class="sig-param"><span class="n">cmap</span><span class="o">=</span><span class="default_value">'Spectral'</span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/shaded/band_projection_matrix.html#visualize_buckets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#shaded.band_projection_matrix.visualize_buckets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Makes a plot of the buckets using a heatmap
+:param buckets: a list of the list of indices for each bucket
+:return: a plot</p>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../shaded.html" class="btn btn-neutral float-left" title="shaded" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="chained_spectral_projector.html" class="btn btn-neutral float-right" title="shaded.chained_spectral_projector" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright NO COPYRIGHT.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

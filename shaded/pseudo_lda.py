@@ -27,7 +27,13 @@ class PseudoLda(BaseEstimator, TransformerMixin):
         hyper_plane_basis = centers - np.tile(centers[0, :], (centers.shape[0], 1))
         hyper_plane_basis = hyper_plane_basis[1:, :]
         unit_matrix = np.array(
-            [vec / norm for vec, norm in zip(hyper_plane_basis, np.sum(hyper_plane_basis ** 2, axis=1) ** 0.5)])
+            [
+                vec / norm
+                for vec, norm in zip(
+                    hyper_plane_basis, np.sum(hyper_plane_basis ** 2, axis=1) ** 0.5
+                )
+            ]
+        )
         self.proj_mat = unit_matrix.T
 
     def transform(self, X, y=None):

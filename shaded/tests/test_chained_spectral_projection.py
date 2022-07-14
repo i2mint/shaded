@@ -25,13 +25,20 @@ def mean_distances_per_group(X, y):
 
 
 # TODO: Repair test
-@pytest.mark.skip(reason="Need to understand this before repairing")
+@pytest.mark.skip(reason='Need to understand this before repairing')
 @pytest.mark.parametrize(
     'X, y, short_chain, long_chain',
-    [(X,
-      y,
-      ({"type": "lda", "args": {"n_components": 2}},),
-      ({"type": "lda", "args": {"n_components": 2}}, {"type": "lda", "args": {"n_components": 1}}))]
+    [
+        (
+            X,
+            y,
+            ({'type': 'lda', 'args': {'n_components': 2}},),
+            (
+                {'type': 'lda', 'args': {'n_components': 2}},
+                {'type': 'lda', 'args': {'n_components': 1}},
+            ),
+        )
+    ],
 )
 def test_GeneralProjectionLearner_lda(X, y, short_chain, long_chain):
     """
@@ -52,16 +59,18 @@ def test_GeneralProjectionLearner_lda(X, y, short_chain, long_chain):
     long_projected_X = gpl.fit_transform(X, y)
     long_mean = mean_distances_per_group(long_projected_X, y)
 
-    assert mean_distance > long_mean > short_mean,\
-        "Something is not right about the mean distances in the projected space"
+    assert (
+        mean_distance > long_mean > short_mean
+    ), 'Something is not right about the mean distances in the projected space'
 
 
 # TODO: Repair test
-@pytest.mark.skip(reason="Need to understand this before repairing")
+@pytest.mark.skip(reason='Need to understand this before repairing')
 def test_general_projection_learner():
     # PCA's components seems to be orthonormal
     from shaded.chained_spectral_projector import GeneralProjectionLearner
     from sklearn.datasets import load_iris
+
     #
     # data = load_iris()
     # X = data['data']

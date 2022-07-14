@@ -17,10 +17,18 @@ class PseudoPca(BaseEstimator, TransformerMixin):
 
     def get_random_hyperplane_unit_matrix(self, X):
         rand_points = X[np.random.choice(X.shape[0], self.hyper_dim)]
-        hyper_plane_basis = rand_points - np.tile(rand_points[0, :], (rand_points.shape[0], 1))
+        hyper_plane_basis = rand_points - np.tile(
+            rand_points[0, :], (rand_points.shape[0], 1)
+        )
         hyper_plane_basis = hyper_plane_basis[1:, :]
         unit_matrix = np.array(
-            [vec / norm for vec, norm in zip(hyper_plane_basis, np.sum(hyper_plane_basis ** 2, axis=1) ** 0.5)])
+            [
+                vec / norm
+                for vec, norm in zip(
+                    hyper_plane_basis, np.sum(hyper_plane_basis ** 2, axis=1) ** 0.5
+                )
+            ]
+        )
         return unit_matrix
 
     def fit(self, X, y=None):

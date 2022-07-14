@@ -16,15 +16,25 @@ from shaded.pair_wise_lda import PairwiseLda
 from shaded.linalg_utils import residue, orth
 from shaded.band_projection_matrix import make_band_matrix, make_buckets, hertz_to_mel
 
-CLUSTERING_OPTIONS = ('KMeans', 'SpectralClustering', 'AffinityPropagation',
-                      'AgglomerativeClustering', 'Birch', 'MeanShift')
+CLUSTERING_OPTIONS = (
+    'KMeans',
+    'SpectralClustering',
+    'AffinityPropagation',
+    'AgglomerativeClustering',
+    'Birch',
+    'MeanShift',
+)
 
 
-def learn_spect_proj(X, y=None, spectral_proj_name='pca',
-                     clustering_meth='KMeans',
-                     clustering_options=CLUSTERING_OPTIONS,
-                     kwargs_feat=None,
-                     kwargs_clust=None):
+def learn_spect_proj(
+    X,
+    y=None,
+    spectral_proj_name='pca',
+    clustering_meth='KMeans',
+    clustering_options=CLUSTERING_OPTIONS,
+    kwargs_feat=None,
+    kwargs_clust=None,
+):
     """
     Function to learn each of the important spectral projection
 
@@ -39,8 +49,11 @@ def learn_spect_proj(X, y=None, spectral_proj_name='pca',
     kwargs_feat = kwargs_feat or {'n_components': 10}
     kwargs_clust = kwargs_clust or {}
 
-    assert clustering_meth in clustering_options, 'clustering options must one of {}'.format(
-        ', '.join(map(str, clustering_options)))
+    assert (
+        clustering_meth in clustering_options
+    ), 'clustering options must one of {}'.format(
+        ', '.join(map(str, clustering_options))
+    )
     clusterer_m = getattr(importlib.import_module('sklearn.cluster'), clustering_meth)
 
     if spectral_proj_name == 'random_gaussian':
@@ -86,7 +99,9 @@ def learn_spect_proj(X, y=None, spectral_proj_name='pca',
     elif spectral_proj_name == 'unsupervised_lda':
         n_components = kwargs_feat['n_components']
         if y is not None:
-            warning = 'Warning: y will be replaced by classes found by the chosen clusterer'
+            warning = (
+                'Warning: y will be replaced by classes found by the chosen clusterer'
+            )
             warnings.warn(warning)
         if 'n_clusters' in clusterer_m.__init__.__code__.co_varnames:
             y = clusterer_m(n_clusters=n_components + 1, **kwargs_clust).fit_predict(X)
@@ -99,7 +114,9 @@ def learn_spect_proj(X, y=None, spectral_proj_name='pca',
     elif spectral_proj_name == 'unsupervised_pseudo_lda':
         n_components = kwargs_feat['n_components']
         if y is not None:
-            warning = 'Warning: y will be replaced by classes found by the chosen clusterer'
+            warning = (
+                'Warning: y will be replaced by classes found by the chosen clusterer'
+            )
             warnings.warn(warning)
         if 'n_clusters' in clusterer_m.__init__.__code__.co_varnames:
             y = clusterer_m(n_clusters=n_components + 1, **kwargs_clust).fit_predict(X)
@@ -136,26 +153,33 @@ def learn_spect_proj(X, y=None, spectral_proj_name='pca',
         X = np.array(X)
         n_freq = X.shape[1]
         freqs_weighting = kwargs_feat.get('freqs_weighting', hertz_to_mel)
-        buckets = make_buckets(n_buckets=n_components,
-                               reverse=False,
-                               freqs_weighting=freqs_weighting,
-                               freq_range=(0, n_freq))
+        buckets = make_buckets(
+            n_buckets=n_components,
+            reverse=False,
+            freqs_weighting=freqs_weighting,
+            freq_range=(0, n_freq),
+        )
         default_matrix = make_band_matrix(buckets, n_freq=n_freq)
         proj_matrix = default_matrix.T
 
-
     else:
-        all_spectral_proj = ', '.join(['keep_features', 'pca',
-                                       'lda', 'pseudo_pca',
-                                       'unsupervised_lda',
-                                       'unsupervised_nca',
-                                       'nca',
-                                       'linear_regression',
-                                       'unsupervised_pseudo_lda',
-                                       'pseudo_lda',
-                                       'pairwise_lda',
-                                       'random_gaussian',
-                                       'default'])
+        all_spectral_proj = ', '.join(
+            [
+                'keep_features',
+                'pca',
+                'lda',
+                'pseudo_pca',
+                'unsupervised_lda',
+                'unsupervised_nca',
+                'nca',
+                'linear_regression',
+                'unsupervised_pseudo_lda',
+                'pseudo_lda',
+                'pairwise_lda',
+                'random_gaussian',
+                'default',
+            ]
+        )
         raise ValueError(f'the spectral projector must be one of: {all_spectral_proj}')
 
     return proj_matrix
@@ -175,8 +199,13 @@ def keep_only_indices(indices, n_freq=1025):
     return proj_matrix
 
 
-def learn_chain_proj_matrix(X, y=None, chain=({'type': 'pca', 'args': {'n_components': 5}},),
-                            indices=None, n_freq=1025):
+def learn_chain_proj_matrix(
+    X,
+    y=None,
+    chain=({'type': 'pca', 'args': {'n_components': 5}},),
+    indices=None,
+    n_freq=1025,
+):
     """
     A function successively learning a projections matrix on the residue of the previous one. The projections
     matrices are then concatenated and return as one single projection matrix. Note that the final projection
@@ -204,11 +233,11 @@ def learn_chain_proj_matrix(X, y=None, chain=({'type': 'pca', 'args': {'n_compon
     all_proj_matrices = []
     for idx, mat_dict in enumerate(chain):
         kwargs_feat = mat_dict['args']
-        proj_matrix = learn_spect_proj(X, y,
-                                       spectral_proj_name=mat_dict['type'],
-                                       kwargs_feat=kwargs_feat)
+        proj_matrix = learn_spect_proj(
+            X, y, spectral_proj_name=mat_dict['type'], kwargs_feat=kwargs_feat
+        )
         all_proj_matrices.append(proj_matrix)
-        #if idx < len(chain) - 1:
+        # if idx < len(chain) - 1:
         X = residue(proj_matrix, X)
         # # scatter_and_color_according_to_y(X, y)
         # print(X[:3])
@@ -223,7 +252,12 @@ from sklearn.base import TransformerMixin, BaseEstimator
 
 
 class GeneralProjectionLearner(BaseEstimator, TransformerMixin):
-    def __init__(self, chain=({'type': 'pca', 'args': {'n_components': 5}},), indices=None, n_freq=1025):
+    def __init__(
+        self,
+        chain=({'type': 'pca', 'args': {'n_components': 5}},),
+        indices=None,
+        n_freq=1025,
+    ):
         self.chain = chain
         self.indices = indices
         self.n_freq = n_freq
@@ -241,7 +275,9 @@ class GeneralProjectionLearner(BaseEstimator, TransformerMixin):
         :return:
         """
 
-        self.scalings = learn_chain_proj_matrix(X, y, self.chain, indices=self.indices, n_freq=self.n_freq)
+        self.scalings = learn_chain_proj_matrix(
+            X, y, self.chain, indices=self.indices, n_freq=self.n_freq
+        )
         if ortho:
             self.scalings = orth(self.scalings.T).T
             self.projection_ = np.dot(self.scalings, self.scalings.T)
@@ -259,4 +295,3 @@ class GeneralProjectionLearner(BaseEstimator, TransformerMixin):
 
     def space_residue(self, X):
         return X - np.dot(X, self.projection_)
-
