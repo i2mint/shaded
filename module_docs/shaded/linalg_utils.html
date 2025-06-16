@@ -1,0 +1,218 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>shaded.linalg_utils &mdash; shaded 0.1.3 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
+      <link rel="stylesheet" type="text/css" href="../../_static/graphviz.css?v=4ae1632d" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=360bc84d"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/toggleprompt.js?v=d7ede5d2"></script>
+      <script src="../../_static/clipboard.min.js?v=a7894cd8"></script>
+      <script src="../../_static/copybutton.js?v=f281be69"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="shaded.pair_wise_lda" href="pair_wise_lda.html" />
+    <link rel="prev" title="shaded.chained_spectral_projector" href="chained_spectral_projector.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            shaded
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../shaded.html">shaded</a></li>
+<li class="toctree-l1"><a class="reference internal" href="band_projection_matrix.html">shaded.band_projection_matrix</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chained_spectral_projector.html">shaded.chained_spectral_projector</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">shaded.linalg_utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#shaded.linalg_utils.null_space"><code class="docutils literal notranslate"><span class="pre">null_space()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#shaded.linalg_utils.orth"><code class="docutils literal notranslate"><span class="pre">orth()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#shaded.linalg_utils.projection"><code class="docutils literal notranslate"><span class="pre">projection()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#shaded.linalg_utils.residue"><code class="docutils literal notranslate"><span class="pre">residue()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="pair_wise_lda.html">shaded.pair_wise_lda</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pseudo_lda.html">shaded.pseudo_lda</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pseudo_pca.html">shaded.pseudo_pca</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tests/test_chained_spectral_projection.html">shaded.tests.test_chained_spectral_projection</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tests/test_linalg_utils.html">shaded.tests.test_linalg_utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="util.html">shaded.util</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">shaded</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">shaded.linalg_utils</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../../_sources/module_docs/shaded/linalg_utils.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-shaded.linalg_utils">
+<span id="shaded-linalg-utils"></span><h1>shaded.linalg_utils<a class="headerlink" href="#module-shaded.linalg_utils" title="Link to this heading"></a></h1>
+<p>Linear algebra utils</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="shaded.linalg_utils.null_space">
+<span class="sig-prename descclassname"><span class="pre">shaded.linalg_utils.</span></span><span class="sig-name descname"><span class="pre">null_space</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rcond</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/shaded/linalg_utils.html#null_space"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shaded.linalg_utils.null_space" title="Link to this definition"></a></dt>
+<dd><p>Find an orthonormal matrix whose rows span the nullspace of the matrix A. Put another way, find a maximal
+number of row vectors, each of which has a 0 dot product with all the rows of A, while those row vectors are
+also normal to each other and of unit length</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">null_space</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+<span class="go">array([[0., 1., 0.],</span>
+<span class="go">       [0., 0., 1.]])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span> <span class="p">[</span><span class="mf">2.1</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">B</span> <span class="o">=</span> <span class="n">null_space</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The vectors are normal</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">B</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">array([1., 1.])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="shaded.linalg_utils.orth">
+<span class="sig-prename descclassname"><span class="pre">shaded.linalg_utils.</span></span><span class="sig-name descname"><span class="pre">orth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">A</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/shaded/linalg_utils.html#orth"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shaded.linalg_utils.orth" title="Link to this definition"></a></dt>
+<dd><p>Orthonormalize the matrix A, i.e, replace it with another matrix spanning the same subspace but:
+1) with minimal number of rows
+2) rows normal to each other
+3) rows of length 1</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>A</strong> – a n-by-k array</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>a n-by-k array whose row spans the same space as the rows of A and with the normal rows</p>
+</dd>
+</dl>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">M</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">OM</span> <span class="o">=</span> <span class="n">orth</span><span class="p">(</span><span class="n">M</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># checking the product of O and its transpose is the identity</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">OM</span><span class="p">,</span> <span class="n">OM</span><span class="o">.</span><span class="n">T</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="mi">2</span><span class="p">))</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="shaded.linalg_utils.projection">
+<span class="sig-prename descclassname"><span class="pre">shaded.linalg_utils.</span></span><span class="sig-name descname"><span class="pre">projection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">basis</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vectors</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/shaded/linalg_utils.html#projection"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shaded.linalg_utils.projection" title="Link to this definition"></a></dt>
+<dd><p>The vectors live in a k dimensional space S and the columns of the basis are vectors of the same
+space spanning a subspace of S. Gives a representation of the projection of vector into the space
+spanned by basis in term of the basis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>basis</strong> – an n-by-k array, a matrix whose vertical columns are the vectors of the basis</p></li>
+<li><p><strong>vectors</strong> – an m-by-k array, a vector to be represented in the basis</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>an m-by-k array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="shaded.linalg_utils.residue">
+<span class="sig-prename descclassname"><span class="pre">shaded.linalg_utils.</span></span><span class="sig-name descname"><span class="pre">residue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">span_vectors</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vectors</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../../_modules/shaded/linalg_utils.html#residue"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#shaded.linalg_utils.residue" title="Link to this definition"></a></dt>
+<dd><p>find the residue of each of vectors after projection in basis
+:param span_vectors: an n-by-k array, spanning a vector space A
+:param vectors: an n-by-l array
+:return: an n-by-l array, the residues of vectors with the respect of the projection in the space spanned</p>
+<blockquote>
+<div><p>by span_vectors</p>
+</div></blockquote>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">span_vectors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vectors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">residue</span><span class="p">(</span><span class="n">span_vectors</span><span class="p">,</span> <span class="n">vectors</span><span class="p">))</span>
+<span class="go">[[0 0]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">span_vectors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vectors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">]])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">residue</span><span class="p">(</span><span class="n">span_vectors</span><span class="p">,</span> <span class="n">vectors</span><span class="p">))</span>
+<span class="go">[[0 3]]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="chained_spectral_projector.html" class="btn btn-neutral float-left" title="shaded.chained_spectral_projector" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pair_wise_lda.html" class="btn btn-neutral float-right" title="shaded.pair_wise_lda" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright NO COPYRIGHT.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
