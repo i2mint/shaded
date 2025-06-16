@@ -12,8 +12,8 @@ y = iris.target
 def mean_distances(X):
     distances = euclidean_distances(X)
     len_X = len(X)
-    dim_factor = 1 / (2 ** 1 / len_X)
-    return dim_factor * np.sum(distances) / (len_X ** 2 - len_X)
+    dim_factor = 1 / (2**1 / len_X)
+    return dim_factor * np.sum(distances) / (len_X**2 - len_X)
 
 
 def mean_distances_per_group(X, y):
@@ -25,17 +25,17 @@ def mean_distances_per_group(X, y):
 
 
 # TODO: Repair test
-@pytest.mark.skip(reason='Need to understand this before repairing')
+@pytest.mark.skip(reason="Need to understand this before repairing")
 @pytest.mark.parametrize(
-    'X, y, short_chain, long_chain',
+    "X, y, short_chain, long_chain",
     [
         (
             X,
             y,
-            ({'type': 'lda', 'args': {'n_components': 2}},),
+            ({"type": "lda", "args": {"n_components": 2}},),
             (
-                {'type': 'lda', 'args': {'n_components': 2}},
-                {'type': 'lda', 'args': {'n_components': 1}},
+                {"type": "lda", "args": {"n_components": 2}},
+                {"type": "lda", "args": {"n_components": 1}},
             ),
         )
     ],
@@ -61,11 +61,11 @@ def test_GeneralProjectionLearner_lda(X, y, short_chain, long_chain):
 
     assert (
         mean_distance > long_mean > short_mean
-    ), 'Something is not right about the mean distances in the projected space'
+    ), "Something is not right about the mean distances in the projected space"
 
 
 # TODO: Repair test
-@pytest.mark.skip(reason='Need to understand this before repairing')
+@pytest.mark.skip(reason="Need to understand this before repairing")
 def test_general_projection_learner():
     # PCA's components seems to be orthonormal
     from shaded.chained_spectral_projector import GeneralProjectionLearner
@@ -90,7 +90,7 @@ def test_general_projection_learner():
     # scatter_and_color_according_to_y(XXX, y)
     # scatter_and_color_according_to_y(XXXX, y)
 
-    chain = ({'type': 'log_spaced', 'args': {'n_components': 8, 'chunk_size': 64}},)
+    chain = ({"type": "log_spaced", "args": {"n_components": 8, "chunk_size": 64}},)
     X = np.random.random((100, 33))
     # X = None
     gpl = GeneralProjectionLearner(chain=chain)
