@@ -25,7 +25,7 @@ class PseudoPca(BaseEstimator, TransformerMixin):
             [
                 vec / norm
                 for vec, norm in zip(
-                    hyper_plane_basis, np.sum(hyper_plane_basis ** 2, axis=1) ** 0.5
+                    hyper_plane_basis, np.sum(hyper_plane_basis**2, axis=1) ** 0.5
                 )
             ]
         )

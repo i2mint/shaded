@@ -1,6 +1,7 @@
 """
 Linear algebra utils
 """
+
 import numpy as np
 
 

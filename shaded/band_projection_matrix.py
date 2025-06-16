@@ -48,8 +48,8 @@ def make_buckets(
     n_freqs = high_freq - low_freq
     if n_freqs < n_buckets and non_empty_bucket:
         warnings.warn(
-            'You asked for more buckets than the number of frequencies available, '
-            'some will necessarily be empty'
+            "You asked for more buckets than the number of frequencies available, "
+            "some will necessarily be empty"
         )
         non_empty_bucket = False
 
@@ -58,7 +58,7 @@ def make_buckets(
     if reverse:
         freq_range.reverse()
     # get the value of each frequency
-    if not hasattr(freqs_weighting, '__iter__'):
+    if not hasattr(freqs_weighting, "__iter__"):
         freq_values = list(map(freqs_weighting, freq_range))
     else:
         freq_values = freqs_weighting
@@ -208,7 +208,7 @@ def buckets_conversion(buckets, conversion_function=hertz_to_mel):
     return new_buckets
 
 
-def visualize_buckets(buckets, cmap='Spectral'):
+def visualize_buckets(buckets, cmap="Spectral"):
     """
     Makes a plot of the buckets using a heatmap
     :param buckets: a list of the list of indices for each bucket
@@ -226,9 +226,9 @@ def visualize_buckets(buckets, cmap='Spectral'):
     for i, bucket in enumerate(buckets):
         for repeat in range(len(bucket)):
             colors.append([1 / (i + 1)])
-    plt.imshow(colors, cmap=cmap, interpolation='nearest', aspect=aspect)
-    plt.axis('off')
-    plt.title('high frequencies on top')
+    plt.imshow(colors, cmap=cmap, interpolation="nearest", aspect=aspect)
+    plt.axis("off")
+    plt.title("high frequencies on top")
     plt.show()
 
 

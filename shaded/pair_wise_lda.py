@@ -1,6 +1,7 @@
 """
 Pairwise LDA
 """
+
 from sklearn.base import BaseEstimator, TransformerMixin
 import numpy as np
 from itertools import combinations

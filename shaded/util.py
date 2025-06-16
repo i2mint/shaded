@@ -1,6 +1,5 @@
 """Util"""
 
-
 try:
     import importlib.resources
 
@@ -10,6 +9,6 @@ except AttributeError:
 
     _files = importlib_resources.files
 
-files = _files('shaded')
-data_dir = files / 'data'
+files = _files("shaded")
+data_dir = files / "data"
 data_dir_path = str(data_dir)

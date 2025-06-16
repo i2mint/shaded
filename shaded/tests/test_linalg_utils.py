@@ -4,7 +4,7 @@ import pytest
 
 
 @pytest.mark.parametrize(
-    'basis', [[[1, 0, 0]], [[1, 0, 0], [0, 1, 0]], (2, 3), (100, 200)]
+    "basis", [[[1, 0, 0]], [[1, 0, 0], [0, 1, 0]], (2, 3), (100, 200)]
 )
 def test_null_space(basis):
     if isinstance(basis, tuple):
@@ -15,11 +15,11 @@ def test_null_space(basis):
     zero_as_prod = np.zeros(prod.shape)
     assert np.allclose(
         prod, zero_as_prod
-    ), 'The null space is not normal to the original space'
+    ), "The null space is not normal to the original space"
 
 
 @pytest.mark.parametrize(
-    'basis, vector',
+    "basis, vector",
     [
         ([[1, 0, 0], [0, 1, 0], [0, 0, 1]], [1, 2, 3]),
         ([[1, 0, 0], [0, 1, 0], [0, 0, 1]], [[0, 1, 2], [3, 4, 5]]),
@@ -31,11 +31,11 @@ def test_projection(basis, vector):
     vect_proj = projection(basis, vector)
     assert np.allclose(
         vector, vect_proj
-    ), 'The projection differs from the original vector, something is not right'
+    ), "The projection differs from the original vector, something is not right"
 
 
 @pytest.mark.parametrize(
-    'X, span',
+    "X, span",
     [
         (np.random.random((100, 3)), np.array([[1, 0, 0], [0, 1, 0]])),
         (np.random.random((100, 4)), np.array([[1, 0, 0, 0]])),
@@ -46,7 +46,7 @@ def test_proj_plus_res(X, span):
 
 
 @pytest.mark.parametrize(
-    'span_vectors, vectors',
+    "span_vectors, vectors",
     [([[1, 0], [0, 1]], [[2, 3]]), ([[1, 0, 0], [0, 1, 0], [0, 0, 1]], [[2, 3, 4]])],
 )
 def test_residue(span_vectors, vectors):
