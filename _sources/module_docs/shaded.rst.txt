@@ -1,4 +1,0 @@
-shaded
-======
-.. automodule:: shaded
-   :members:

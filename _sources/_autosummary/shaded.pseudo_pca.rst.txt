@@ -1,0 +1,12 @@
+shaded.pseudo\_pca
+==================
+
+.. automodule:: shaded.pseudo_pca
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      PseudoPca
+   

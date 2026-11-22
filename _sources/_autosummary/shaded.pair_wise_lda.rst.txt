@@ -1,0 +1,12 @@
+shaded.pair\_wise\_lda
+======================
+
+.. automodule:: shaded.pair_wise_lda
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      PairwiseLda
+   

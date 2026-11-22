@@ -1,0 +1,20 @@
+shaded.chained\_spectral\_projector
+===================================
+
+.. automodule:: shaded.chained_spectral_projector
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      keep_only_indices
+      learn_chain_proj_matrix
+      learn_spect_proj
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      GeneralProjectionLearner
+   

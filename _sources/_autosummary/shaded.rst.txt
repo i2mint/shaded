@@ -1,0 +1,19 @@
+﻿shaded
+======
+
+.. automodule:: shaded
+
+   
+.. rubric:: Modules
+
+.. autosummary::
+   :toctree:
+   :recursive:
+
+   band_projection_matrix
+   chained_spectral_projector
+   linalg_utils
+   pair_wise_lda
+   pseudo_lda
+   pseudo_pca
+   util

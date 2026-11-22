@@ -1,0 +1,20 @@
+shaded.band\_projection\_matrix
+===============================
+
+.. automodule:: shaded.band_projection_matrix
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      buckets_conversion
+      hertz_to_mel
+      make_band_matrix
+      make_band_matrix_row
+      make_band_proj_matrix
+      make_buckets
+      make_buckets_simple
+      mel_to_hertz
+      visualize_buckets
+   

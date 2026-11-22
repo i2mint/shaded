@@ -1,0 +1,17 @@
+shaded.linalg\_utils
+====================
+
+.. automodule:: shaded.linalg_utils
+
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+   
+      make_proj_matrix
+      null_space
+      orth
+      projection
+      projection_
+      residue
+   

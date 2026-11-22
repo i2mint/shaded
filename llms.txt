@@ -1,0 +1,26 @@
+# shaded
+
+> Tools for linear dimension reduction
+
+
+## Pages
+
+- [shaded](index.html.md): &#42;&#42;shaded&#42;&#42; provides tools for linear spectral feature extraction and dimension reduction, with a foc...
+- [API reference](api.html.md): | &#96;shaded&#96;   | Tools to make linear spectral features   |
+- [shaded](_autosummary/shaded.html.md): Tools to make linear spectral features
+- [shaded.band_projection_matrix](_autosummary/shaded.band_projection_matrix.html.md): Band projection matrix
+- [shaded.chained_spectral_projector](_autosummary/shaded.chained_spectral_projector.html.md): Chained spectral projectors
+- [shaded.linalg_utils](_autosummary/shaded.linalg_utils.html.md): Linear algebra utils
+- [shaded.pair_wise_lda](_autosummary/shaded.pair_wise_lda.html.md): Pairwise LDA
+- [shaded.pseudo_lda](_autosummary/shaded.pseudo_lda.html.md): | &#96;PseudoLda&#96;(n_components)   | A class finding the hyperplane passing the centers of the classes in...
+- [shaded.pseudo_pca](_autosummary/shaded.pseudo_pca.html.md): | &#96;PseudoPca&#96;(n_components&#91;, n_samples&#93;)   | A class imitating PCA in the following way:   |
+- [shaded.util](_autosummary/shaded.util.html.md): Page content
+- [About this build](about-this-build.html.md): This documentation was built on &#42;&#42;2026-11-22 22:32 UTC&#42;&#42; from commit &lt;a href="https://github.com/i2m...
+
+## Optional
+
+- [shaded.md](shaded.md): Complete documentation in a single file.
+
+## Build
+
+- [build_info.json](build_info.json): build provenance (commit, version, tool versions, whether the docs match the package)

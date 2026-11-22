@@ -1,0 +1,12 @@
+shaded.pseudo\_lda
+==================
+
+.. automodule:: shaded.pseudo_lda
+
+   
+   .. rubric:: Classes
+
+   .. autosummary::
+   
+      PseudoLda
+   
